@@ -201,7 +201,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             fseek(file, 2, SEEK_CUR);
             fread(&cmd, 1, 1, file);
             fread(&prm, 1, 1, file);
-            cmd &= 0xF;
+            cmd &= 0x0F;
 
             if (cmd > 0x4 && cmd < 0xA)
             {

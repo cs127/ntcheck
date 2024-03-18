@@ -34,6 +34,7 @@ the currently supported platforms are:
 
 * Linux (64-bit)
 * Linux (32-bit)
+* DOS + CWSDPMI (32-bit)
 * Windows (64-bit)
 * Windows (32-bit)
 
