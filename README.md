@@ -43,23 +43,10 @@ portable, and can be compiled for any platform! :3
 
 ### manual compilation
 
-compile `src/main.c` and `src/core.c`. any C89-compatible compiler should work.
+you can use CMake to compile the project.
 
-additionally, if you're using an OS / environment that can run POSIX shell
-scripts (e.g. Linux, or MinGW on Windows), and you have a POSIX-compliant C
-compiler, run the `build` script in the root of the repository (`./build`). the
-output executable `ntcheck` will be created in the same directory.
-
-by default, the `build` script uses `cc` as the C compiler, which is usually the
-default C compiler on your system. it also adds no additional flags to the
-compiler's command line.
-
-* to use a different compiler, you can pass it through the `CC`
-  environment variable to the script (e.g. `CC=i686-msdosdjgpp-gcc ./build` to
-  compile using DJGPP).
-* to pass additional flags to the compiler's command line, you can pass them
-  through the `CFLAGS` environment variable (e.g. `CFLAGS=-m32 ./build` to
-  compile for a 32-bit target).
+if you don't want to use CMake, simply compile `src/main.c` and `src/core.c`.
+any C89-compatible compiler should work.
 
 ## usage
 

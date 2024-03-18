@@ -43,7 +43,8 @@ void NTC_printcell
     NTC_print
     (
         stream, fname,
-        "(PAT %03zu ROW %02zu CHN %01zu) ", pat, row, chn + 1
+        "(PAT %03u ROW %02u CHN %01u) ",
+        (unsigned int)pat, (unsigned int)row, (unsigned int)(chn + 1)
     );
 
     va_start(ap, fmt);
@@ -90,7 +91,7 @@ int NTC_checkmagic(const char* fname, FILE* file)
     NTC_print
     (
         stderr, fname,
-        "not a valid 4-channel amiga module file.\n"
+        "not a valid 4-channel Amiga module file.\n"
     );
     return 0;
 }

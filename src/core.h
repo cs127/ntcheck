@@ -2,6 +2,7 @@
 #define NTC_H_CORE
 
 
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
 

@@ -8,8 +8,8 @@
 #include "core.h"
 
 
-#define C_BOLD   "\e[1m"
-#define C_UNBOLD "\e[22m"
+#define C_BOLD   "\x1B[1m"
+#define C_UNBOLD "\x1B[22m"
 
 
 int main(int argc, char** argv)
