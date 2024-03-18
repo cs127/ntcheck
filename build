@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -z "$CC"     ] && CC="cc"
+[ -z "$CFLAGS" ] && CFLAGS=""
+
+cd "$(dirname "$0")"
+
+$CC $CFLAGS src/main.c src/core.c -o ntcheck
