@@ -12,7 +12,7 @@ contains the following commands in its patterns, which are not supported by
 NoiseTracker:
 
 * `5xy` (volume slide + portamento)
-* `6xx` (volume slide + vibrato)
+* `6xy` (volume slide + vibrato)
 * `7xy` (tremolo)
 * `8xx` (implementation-defined)
 * `9xx` (sample offset)
