@@ -8,8 +8,8 @@
 #include "core.h"
 
 
-#define C_BOLD   "\x1B[1m"
-#define C_UNBOLD "\x1B[0m"
+#define C_BOLD  "\x1B[1m"
+#define C_RESET "\x1B[0m" /* not using \x1B[22m because ANSI.SYS is stupid */
 
 
 int main(int argc, char** argv)
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
         NTC_print
         (
             stdout, argv[i],
-            C_BOLD "module %s compatible with NoiseTracker. %s\n" C_UNBOLD,
+            C_BOLD "module %s compatible with NoiseTracker. %s\n" C_RESET,
             compat ? "IS" : "IS NOT",
             compat ? ":3" : ":("
         );
