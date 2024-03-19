@@ -18,9 +18,11 @@
 #define NTC_MAGIC_PTR       0x0438
 #define NTC_PATTERNS_PTR    0x043C
 
+#define NTC_PERIOD_C1       856
+#define NTC_PERIOD_B3       113
+
 #define NTC_MAGIC_COUNT     17
 #define NTC_MAGIC_SIZE      4
-
 extern const char* NTC_MAGIC [NTC_MAGIC_COUNT];
 
 

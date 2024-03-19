@@ -187,22 +187,43 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
 {
     size_t row;
     size_t chn;
+    unsigned char prdbyte;
+    unsigned short int prd;
     unsigned char cmd;
     unsigned char prm;
-    int compat;
+    int prdcompat;
+    int cmdcompat;
 
     fseek(file, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
 
-    compat = 1;
+    prdcompat = 1;
+    cmdcompat = 1;
 
     for (row = 0; row < NTC_ROWNUM; row++)
     {
         for (chn = 0; chn < NTC_CHNNUM; chn++)
         {
-            fseek(file, 2, SEEK_CUR);
+            prd = 0;
+
+            fread(&prdbyte, 1, 1, file);
+            prd |= prdbyte << 8;
+            fread(&prdbyte, 1, 1, file);
+            prd |= prdbyte;
+            prd &= 0x0FFF;
+
             fread(&cmd, 1, 1, file);
             fread(&prm, 1, 1, file);
             cmd &= 0x0F;
+
+            if (prd && (prd > NTC_PERIOD_C1 || prd < NTC_PERIOD_B3))
+            {
+                NTC_printcell
+                (
+                    stdout, fname, pat, row, chn,
+                    "note pitch outside the allowed range.\n", prd
+                );
+                prdcompat = 0;
+            }
 
             if (cmd > 0x4 && cmd < 0xA)
             {
@@ -238,9 +259,9 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             }
             else continue;
 
-            compat = 0;
+            cmdcompat = 0;
         }
     }
 
-    return compat;
+    return prdcompat && cmdcompat;
 }

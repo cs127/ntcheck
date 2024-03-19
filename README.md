@@ -7,9 +7,9 @@ NoiseTracker.
 
 written in pure C89.
 
-the program checks if a module contains more than 64 patterns, and whether it
-contains the following commands in its patterns, which are not supported by
-NoiseTracker:
+the program checks if a module contains more than 64 patterns, whether it
+contains any notes outside the valid pitch range, and whether it contains any of
+the following commands in its patterns, which are not supported by NoiseTracker:
 
 * `5xy` (volume slide + portamento)
 * `6xy` (volume slide + vibrato)
