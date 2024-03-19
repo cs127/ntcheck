@@ -52,31 +52,31 @@ void NTC_printcell
     va_end(ap);
 }
 
-int NTC_checkmagic(const char* fname, FILE* file)
+int NTC_checkmagic(NTC_File* file)
 {
     int fseekres;
     size_t freadres;
     char magic [NTC_MAGIC_SIZE];
     size_t i;
 
-    fseekres = fseek(file, NTC_MAGIC_PTR, SEEK_SET);
+    fseekres = fseek(file->stream, NTC_MAGIC_PTR, SEEK_SET);
     if (fseekres)
     {
         NTC_print
         (
-            stderr, fname,
+            stderr, file->name,
             "could not find the magic bytes (%s).\n", strerror(errno)
         );
         return 0;
     }
 
-    freadres = fread(magic, 1, 4, file);
+    freadres = fread(magic, 1, 4, file->stream);
     if (freadres < 4)
     {
         NTC_print
         (
-            stderr, fname,
-            feof(file)
+            stderr, file->name,
+            feof(file->stream)
             ? "could not read the magic bytes (file ends prematurely).\n"
             : "could not read the magic bytes.\n"
         );
@@ -90,13 +90,13 @@ int NTC_checkmagic(const char* fname, FILE* file)
 
     NTC_print
     (
-        stderr, fname,
+        stderr, file->name,
         "not a valid 4-channel Amiga module file.\n"
     );
     return 0;
 }
 
-int NTC_getpatnum(const char* fname, FILE* file)
+int NTC_getpatnum(NTC_File* file)
 {
     int fseekres;
     size_t freadres;
@@ -105,48 +105,48 @@ int NTC_getpatnum(const char* fname, FILE* file)
     unsigned char orders [NTC_ORDNUM_MAX];
     size_t i;
 
-    fseekres = fseek(file, NTC_ORDNUM_PTR, SEEK_SET);
+    fseekres = fseek(file->stream, NTC_ORDNUM_PTR, SEEK_SET);
     if (fseekres)
     {
         NTC_print
         (
-            stderr, fname,
+            stderr, file->name,
             "could not find the number of orders (%s).\n", strerror(errno)
         );
         return -1;
     }
 
-    freadres = fread(&ordnum, 1, 1, file);
+    freadres = fread(&ordnum, 1, 1, file->stream);
     if (!freadres)
     {
         NTC_print
         (
-            stderr, fname,
-            feof(file)
+            stderr, file->name,
+            feof(file->stream)
             ? "could not read the number of orders (file ends prematurely).\n"
             : "could not read the number of orders.\n"
         );
         return -1;
     }
 
-    fseekres = fseek(file, NTC_ORDERS_PTR, SEEK_SET);
+    fseekres = fseek(file->stream, NTC_ORDERS_PTR, SEEK_SET);
     if (fseekres)
     {
         NTC_print
         (
-            stderr, fname,
+            stderr, file->name,
             "could not find the order list (%s).\n", strerror(errno)
         );
         return -1;
     }
 
-    freadres = fread(orders, 1, NTC_ORDNUM_MAX, file);
+    freadres = fread(orders, 1, NTC_ORDNUM_MAX, file->stream);
     if (freadres < NTC_ORDNUM_MAX)
     {
         NTC_print
         (
-            stderr, fname,
-            feof(file)
+            stderr, file->name,
+            feof(file->stream)
             ? "could not read the orders (file ends prematurely).\n"
             : "could not read the orders.\n"
         );
@@ -160,12 +160,13 @@ int NTC_getpatnum(const char* fname, FILE* file)
         if (orders[i] + 1 > patnum) patnum = orders[i] + 1;
     }
 
-    fseekres = fseek(file, NTC_PATTERNS_PTR + patnum * NTC_PATSIZE, SEEK_SET);
+    fseekres =
+    fseek(file->stream, NTC_PATTERNS_PTR + patnum * NTC_PATSIZE, SEEK_SET);
     if (fseekres)
     {
         NTC_print
         (
-            stderr, fname,
+            stderr, file->name,
             "could not locate the end of pattern data (%s).\n", strerror(errno)
         );
         return -1;
@@ -175,7 +176,7 @@ int NTC_getpatnum(const char* fname, FILE* file)
     {
         NTC_print
         (
-            stdout, fname,
+            stdout, file->name,
             "module has more than 64 patterns."
         );
     }
@@ -183,7 +184,7 @@ int NTC_getpatnum(const char* fname, FILE* file)
     return patnum;
 }
 
-int NTC_procpat(const char* fname, FILE* file, size_t pat)
+int NTC_procpat(NTC_File* file, size_t pat)
 {
     size_t row;
     size_t chn;
@@ -194,7 +195,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
     int prdcompat;
     int cmdcompat;
 
-    fseek(file, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
+    fseek(file->stream, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
 
     prdcompat = 1;
     cmdcompat = 1;
@@ -205,21 +206,21 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
         {
             prd = 0;
 
-            fread(&prdbyte, 1, 1, file);
+            fread(&prdbyte, 1, 1, file->stream);
             prd |= prdbyte << 8;
-            fread(&prdbyte, 1, 1, file);
+            fread(&prdbyte, 1, 1, file->stream);
             prd |= prdbyte;
             prd &= 0x0FFF;
 
-            fread(&cmd, 1, 1, file);
-            fread(&prm, 1, 1, file);
+            fread(&cmd, 1, 1, file->stream);
+            fread(&prm, 1, 1, file->stream);
             cmd &= 0x0F;
 
             if (prd && (prd > NTC_PERIOD_C1 || prd < NTC_PERIOD_B3))
             {
                 NTC_printcell
                 (
-                    stdout, fname, pat, row, chn,
+                    stdout, file->name, pat, row, chn,
                     "note pitch outside the allowed range.\n", prd
                 );
                 prdcompat = 0;
@@ -229,7 +230,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, fname, pat, row, chn,
+                    stdout, file->name, pat, row, chn,
                     "invalid command %01X.\n", cmd
                 );
             }
@@ -237,7 +238,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, fname, pat, row, chn,
+                    stdout, file->name, pat, row, chn,
                     "pattern break (D) with nonzero parameter.\n"
                 );
             }
@@ -245,7 +246,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, fname, pat, row, chn,
+                    stdout, file->name, pat, row, chn,
                     "extended command (E) with nonzero subcommand.\n"
                 );
             }
@@ -253,7 +254,7 @@ int NTC_procpat(const char* fname, FILE* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, fname, pat, row, chn,
+                    stdout, file->name, pat, row, chn,
                     "CIA tempo command (F with parameter larger than $1F).\n"
                 );
             }

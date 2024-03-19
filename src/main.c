@@ -15,7 +15,7 @@
 int main(int argc, char** argv)
 {
     int exitcode;
-    FILE* file;
+    NTC_File file;
     size_t i;
     int magic;
     int compat;
@@ -32,30 +32,32 @@ int main(int argc, char** argv)
 
     for (i = 1; i < argc; i++)
     {
-        file = fopen(argv[i], "rb");
-        if (!file)
+        file.name = argv[i];
+
+        file.stream = fopen(file.name, "rb");
+        if (!file.stream)
         {
             NTC_print
             (
-                stderr, argv[i],
+                stderr, file.name,
                 "could not open file (%s).\n", strerror(errno)
             );
             exitcode |= 1;
             continue;
         }
 
-        magic = NTC_checkmagic(argv[i], file);
+        magic = NTC_checkmagic(&file);
         if (magic <= 0)
         {
-            fclose(file);
+            fclose(file.stream);
             exitcode |= 2;
             continue;
         }
 
-        patnum = NTC_getpatnum(argv[i], file);
+        patnum = NTC_getpatnum(&file);
         if (patnum == -1)
         {
-            fclose(file);
+            fclose(file.stream);
             exitcode |= 4;
             continue;
         }
@@ -65,18 +67,18 @@ int main(int argc, char** argv)
 
         for (pat = 0; pat < patnum; pat++)
         {
-            compat &= NTC_procpat(argv[i], file, pat);
+            compat &= NTC_procpat(&file, pat);
         }
 
         NTC_print
         (
-            stdout, argv[i],
+            stdout, file.name,
             C_BOLD "module %s compatible with NoiseTracker. %s\n" C_RESET,
             compat ? "IS" : "IS NOT",
             compat ? ":3" : ":("
         );
 
-        fclose(file);
+        fclose(file.stream);
     }
 
     return exitcode;

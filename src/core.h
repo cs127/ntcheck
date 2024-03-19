@@ -26,6 +26,14 @@
 extern const char* NTC_MAGIC [NTC_MAGIC_COUNT];
 
 
+typedef struct NTC_File
+{
+    char* name;
+    FILE* stream;
+}
+NTC_File;
+
+
 void NTC_vprint(FILE* stream, const char* fname, const char* fmt, va_list ap);
 
 void NTC_print(FILE* stream, const char* fname, const char* fmt, ...);
@@ -38,11 +46,11 @@ void NTC_printcell
 );
 
 
-int NTC_checkmagic(const char* fname, FILE* file);
+int NTC_checkmagic(NTC_File* file);
 
-int NTC_getpatnum(const char* fname, FILE* file);
+int NTC_getpatnum(NTC_File* file);
 
-int NTC_procpat(const char* fname, FILE* file, size_t pat);
+int NTC_procpat(NTC_File* file, size_t pat);
 
 
 #endif /* NTC_H_CORE */
