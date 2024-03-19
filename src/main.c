@@ -9,7 +9,7 @@
 
 
 #define C_BOLD   "\x1B[1m"
-#define C_UNBOLD "\x1B[22m"
+#define C_UNBOLD "\x1B[0m"
 
 
 int main(int argc, char** argv)
