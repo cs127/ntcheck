@@ -2,7 +2,7 @@
 
 ## overview
 
-a command-line program to check if an amiga module file is compatible with
+a command-line program to check if an Amiga module file is compatible with
 NoiseTracker.
 
 written in pure C89.
@@ -60,7 +60,7 @@ no command-line options. simply specify the file (or files) you want to check.
 
 * 0: success: all specified files were successfully checked.
 * 1: error: at least one file could not be opened.
-* 2: error: at least one file was not a valid amiga module file.
+* 2: error: at least one file was not a valid Amiga module file.
 * 4: error: at least one file was malformed in some way.
 * 64: error: no files were specified on the command line.
 
