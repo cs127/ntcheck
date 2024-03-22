@@ -1,0 +1,21 @@
+name: DOS build
+
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+    - uses: addnab/docker-run-action@v3
+      with:
+        registry: hub.docker.com
+        image: djfdyuruiry/djgpp:latest
+        shell: bash
+        options: -v ${{ github.workspace }}:/work
+        run: |
+          cd /work/
+          gcc -o ntcheck.exe src/main.c src/core.c
