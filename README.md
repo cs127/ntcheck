@@ -1,12 +1,8 @@
 # ntcheck
 
-a command-line program to check if an Amiga module file is compatible with NoiseTracker.
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-written in pure C89 C.
-
-## overview
-
-the program checks if a module contains more than 64 patterns, whether it contains any notes outside the valid pitch range, and whether it contains any of the following commands in its patterns which are not supported by NoiseTracker.
+A command line program (written in pure C89/ANSI C) which checks if an Amiga module contains more than 64 patterns, whether it contains any notes outside the valid pitch range, and whether it contains any of the following commands in its patterns which are not supported by NoiseTracker.
 
 | effect - condition | function | notes |
 |:---:|:---:|:---:|
@@ -19,46 +15,31 @@ the program checks if a module contains more than 64 patterns, whether it contai
 | `Eyx` - y > 0 | extended command with y not equal to 0 | NoiseTracker ignores `y`, behaving like ProTrackers `E0x` |
 | `Fxx` - xx > $1F | set tempo/BPM (CIA timing) |  |
 
-## installation
+## Table of Contents
 
-### releases
+- [Usage](#usage)
+- [Maintainers](#maintainers)
+- [Contributing](#contributing)
+- [License](#license)
 
-go to the [releases page](https://github.com/cs127/ntcheck/releases) to get compiled executables for your platform.
-
-the currently supported platforms are:
-
-* Linux (64-bit)
-* Linux (32-bit)
-* DOS + CWSDPMI (32-bit)
-* Windows (64-bit)
-* Windows (32-bit)
-
-for other OSes, you need to compile manually. fortunately, the code is very portable, and can be compiled for any platform! :3
-
-### manual compilation
-
-you can use CMake to compile the project.
-
-if you don't want to use CMake, simply compile `src/main.c` and `src/core.c` (e.g. `cc -o ntcheck src/main.c src/core.c`).
-any C89-compatible compiler should work.
-
-## usage
+## Usage
 
 ```bash
 ntcheck [FILE1] [FILE2] [FILE3] ...
 ```
 
-no command-line options. simply specify the file (or files) you want to check.
+## Maintainers
 
-### exit codes
+[@cs127](https://github.com/cs127)
+[@RepellantMold](https://github.com/RepellantMold)
 
-| number | case | explanation |
-|---:|:---:|---|
-| 0 | success | all specified files were successfully checked |
-| 1 | error | at least one file could not be opened |
-| 2 | error | at least one file was not a valid Amiga module file |
-| 4 | error | at least one file was malformed in some way |
-| 64 | error | no files were specified on the command line |
+## Contributing
 
-> [!NOTE]
-> combinations of 1, 2, and 4 will be added together if they occur simultaneously.
+PRs accepted.
+
+Small note: If editing the README, please conform to the
+[standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
+## License
+
+[GPL v3](LICENSE) © 2024 cs127
