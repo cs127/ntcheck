@@ -231,7 +231,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
                 NTC_printcell
                 (
                     stdout, file->name, pat, row, chn,
-                    "invalid command %01X.\n", cmd
+                    "invalid command %01X.\n", (unsigned int)cmd
                 );
             }
             else if (cmd == 0xD && prm)
@@ -265,4 +265,30 @@ int NTC_procpat(NTC_File* file, size_t pat)
     }
 
     return prdcompat && cmdcompat;
+}
+
+int NTC_procsmp(NTC_File* file, size_t smp)
+{
+    char tune;
+
+    fseek
+    (
+        file->stream,
+        NTC_SAMPLES_PTR + smp * NTC_SMPSIZE + NTC_SMPTUNE_RPTR,
+        SEEK_SET
+    );
+
+    fread(&tune, 1, 1, file->stream);
+
+    if (tune & 0x0F)
+    {
+        NTC_print
+        (
+            stdout, file->name,
+            "sample %u has a nonzero finetune value.\n", (unsigned int)(smp + 1)
+        );
+        return 0;
+    }
+
+    return 1;
 }

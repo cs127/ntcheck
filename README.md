@@ -2,7 +2,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-A command line program (written in pure C89 / ANSI C) which checks if an Amiga module contains more than 64 patterns, whether it contains any notes outside the valid pitch range, and whether it contains any of the following commands in its patterns which are not supported by NoiseTracker.
+A command line program (written in pure C89 / ANSI C) which checks if an Amiga module contains more than 64 patterns, whether it contains any notes outside the valid pitch range, whether any of its samples have a nonzero finetune value, and whether it contains any of the following commands in its patterns which are not supported by NoiseTracker.
 
 | effect | condition     | function                                 | notes                                                                |
 |:------:|:-------------:|:----------------------------------------:|:--------------------------------------------------------------------:|

@@ -12,6 +12,18 @@
 #define C_RESET "\x1B[0m" /* not using \x1B[22m because ANSI.SYS is stupid */
 
 
+enum NTC_ExitCode
+{
+    NTC_EXIT_SUCCESS        = 0x00,
+
+    NTC_EXIT_OPEN_FAILURE   = 0x01,
+    NTC_EXIT_NOT_AMIGA_MOD  = 0x02,
+    NTC_EXIT_MALFORMED_FILE = 0x04,
+
+    NTC_EXIT_NO_FILENAMES   = 0x40
+};
+
+
 int main(int argc, char** argv)
 {
     int exitcode;
@@ -21,14 +33,15 @@ int main(int argc, char** argv)
     int compat;
     int patnum;
     size_t pat;
+    size_t smp;
 
     if (argc < 2)
     {
         NTC_print(stderr, "", "no filenames specified.\n");
-        return 64;
+        return NTC_EXIT_NO_FILENAMES;
     }
 
-    exitcode = 0;
+    exitcode = NTC_EXIT_SUCCESS;
 
     for (i = 1; i < argc; i++)
     {
@@ -42,7 +55,7 @@ int main(int argc, char** argv)
                 stderr, file.name,
                 "could not open file (%s).\n", strerror(errno)
             );
-            exitcode |= 1;
+            exitcode |= NTC_EXIT_OPEN_FAILURE;
             continue;
         }
 
@@ -50,7 +63,7 @@ int main(int argc, char** argv)
         if (magic <= 0)
         {
             fclose(file.stream);
-            exitcode |= 2;
+            exitcode |= NTC_EXIT_NOT_AMIGA_MOD;
             continue;
         }
 
@@ -58,7 +71,7 @@ int main(int argc, char** argv)
         if (patnum == -1)
         {
             fclose(file.stream);
-            exitcode |= 4;
+            exitcode |= NTC_EXIT_MALFORMED_FILE;
             continue;
         }
 
@@ -68,6 +81,11 @@ int main(int argc, char** argv)
         for (pat = 0; pat < patnum; pat++)
         {
             compat &= NTC_procpat(&file, pat);
+        }
+
+        for (smp = 0; smp < NTC_SMPNUM; smp++)
+        {
+            compat &= NTC_procsmp(&file, smp);
         }
 
         NTC_print
