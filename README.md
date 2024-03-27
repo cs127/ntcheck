@@ -6,7 +6,7 @@ A command line program (written in pure C89 / ANSI C) which checks if an Amiga m
 
 | effect | condition     | function                                 | notes                                                                |
 |:------:|:-------------:|:----------------------------------------:|:--------------------------------------------------------------------:|
-| `5xx`  | any           | volume slide + portamento                |                                                                      |
+| `5xy`  | any           | volume slide + portamento                |                                                                      |
 | `6xy`  | any           | volume slide + vibrato                   |                                                                      |
 | `7xy`  | any           | tremolo                                  |                                                                      |
 | `8xx`  | any           | implementation-defined                   |                                                                      |
