@@ -1,0 +1,5 @@
+justbuild.it text eol=lf
+
+*.c text
+*.cc text
+*.h text
