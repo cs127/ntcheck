@@ -17,10 +17,16 @@ A command line program (written in pure C89 / ANSI C) which checks if an Amiga m
 
 ## Table of Contents
 
+- [Compile](#compile)
 - [Usage](#usage)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Compile
+
+You can either use CMake, or use [jbi (Linux only)](https://github.com/ppekko/jbi).
+It's also not difficult to manually compile, e.g. `tcc -Iinclude src/main.c src/core.c`.
 
 ## Usage
 

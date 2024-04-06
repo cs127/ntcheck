@@ -1,0 +1,4 @@
+exe = ntcheck
+cc = gcc
+src = src/
+include = include/
