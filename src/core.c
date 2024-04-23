@@ -57,7 +57,7 @@ int NTC_checkmagic(NTC_File* file)
     int fseekres;
     size_t freadres;
     char magic [NTC_MAGIC_SIZE];
-    size_t i;
+    size_t i = 0;
 
     fseekres = fseek(file->stream, NTC_MAGIC_PTR, SEEK_SET);
     if (fseekres)
@@ -83,7 +83,7 @@ int NTC_checkmagic(NTC_File* file)
         return 0;
     }
 
-    for (i = 0; i < NTC_MAGIC_COUNT; i++)
+    for (; i < NTC_MAGIC_COUNT; ++i)
     {
         if (!memcmp(magic, NTC_MAGIC[i], NTC_MAGIC_SIZE)) return 1;
     }
@@ -103,7 +103,7 @@ int NTC_getpatnum(NTC_File* file)
     int patnum;
     unsigned char ordnum;
     unsigned char orders [NTC_ORDNUM_MAX];
-    size_t i;
+    size_t i = 0;
 
     fseekres = fseek(file->stream, NTC_ORDNUM_PTR, SEEK_SET);
     if (fseekres)
@@ -155,7 +155,7 @@ int NTC_getpatnum(NTC_File* file)
 
     patnum = 0;
 
-    for (i = 0; i < ordnum; i++)
+    for (; i < ordnum; ++i)
     {
         if (orders[i] + 1 > patnum) patnum = orders[i] + 1;
     }
@@ -186,23 +186,20 @@ int NTC_getpatnum(NTC_File* file)
 
 int NTC_procpat(NTC_File* file, size_t pat)
 {
-    size_t row;
+    size_t row = 0;
     size_t chn;
     unsigned char prdbyte;
     unsigned short int prd;
     unsigned char cmd;
     unsigned char prm;
-    int prdcompat;
-    int cmdcompat;
+    int prdcompat = 1;
+    int cmdcompat = 1;
 
     fseek(file->stream, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
 
-    prdcompat = 1;
-    cmdcompat = 1;
-
-    for (row = 0; row < NTC_ROWNUM; row++)
+    for (; row < NTC_ROWNUM; ++row)
     {
-        for (chn = 0; chn < NTC_CHNNUM; chn++)
+        for (chn = 0; chn < NTC_CHNNUM; ++chn)
         {
             prd = 0;
 

@@ -26,14 +26,14 @@ enum NTC_ExitCode
 
 int main(int argc, char** argv)
 {
-    int exitcode;
+    int exitcode = NTC_EXIT_SUCCESS;
     NTC_File file;
-    size_t i;
+    size_t i = 0;
     int magic;
     int compat;
     int patnum;
-    size_t pat;
-    size_t smp;
+    size_t pat = 0;
+    size_t smp = 0;
 
     if (argc < 2)
     {
@@ -41,9 +41,7 @@ int main(int argc, char** argv)
         return NTC_EXIT_NO_FILENAMES;
     }
 
-    exitcode = NTC_EXIT_SUCCESS;
-
-    for (i = 1; i < argc; i++)
+    while (++i < argc)
     {
         file.name = argv[i];
 
@@ -78,12 +76,12 @@ int main(int argc, char** argv)
         if (patnum > 64) compat = 0;
         else compat = 1;
 
-        for (pat = 0; pat < patnum; pat++)
+        for (; pat < patnum; ++pat)
         {
             compat &= NTC_procpat(&file, pat);
         }
 
-        for (smp = 0; smp < NTC_SMPNUM; smp++)
+        for (; smp < NTC_SMPNUM; ++smp)
         {
             compat &= NTC_procsmp(&file, smp);
         }
