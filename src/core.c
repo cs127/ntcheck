@@ -184,6 +184,66 @@ int NTC_getpatnum(NTC_File* file)
     return patnum;
 }
 
+int NTC_checkprd(NTC_Pattern* context) {
+    const unsigned short int prd = context->prd;
+
+    if (prd && (prd > NTC_PERIOD_C1 || prd < NTC_PERIOD_B3))
+    {
+        NTC_printcell
+        (
+            &context->display,
+            "note pitch outside the allowed range.\n", prd
+        );
+        return 0;
+    }
+
+    return 1;
+}
+
+int NTC_checkcmd(NTC_Pattern* context) {
+    const unsigned char cmd = context->cmd;
+    const unsigned char prm = context->prm;
+
+    if (cmd > 0x4 && cmd < 0xA)
+    {
+        NTC_printcell
+        (
+            &context->display,
+            "invalid command %01X.\n", (unsigned int)cmd
+        );
+    }
+    else if (cmd == 0xD && prm)
+    {
+        NTC_printcell
+        (
+            &context->display,
+            "pattern break (D) with nonzero parameter.\n"
+        );
+    }
+    else if (cmd == 0xE && (prm & 0xF0))
+    {
+        NTC_printcell
+        (
+            &context->display,
+            "extended command (E) with nonzero subcommand.\n"
+        );
+    }
+    else if (cmd == 0xF && prm >= 0x20)
+    {
+        NTC_printcell
+        (
+            &context->display,
+            "CIA tempo command (F with parameter larger than $1F).\n"
+        );
+    }
+    else
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 int NTC_procpat(NTC_File* file, size_t pat)
 {
     size_t row = 0;
@@ -194,7 +254,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
     unsigned char prm;
     int prdcompat = 1;
     int cmdcompat = 1;
-    NTC_Display context;
+    NTC_Pattern pattern_context;
 
     fseek(file->stream, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
 
@@ -214,57 +274,18 @@ int NTC_procpat(NTC_File* file, size_t pat)
             fread(&prm, 1, 1, file->stream);
             cmd &= 0x0F;
 
-            context.pat = pat;
-            context.row = row;
-            context.chn = chn;
-            context.fname = file->name;
-            context.stream = stdout;
+            pattern_context.prd = prd;
+            pattern_context.cmd = cmd;
+            pattern_context.prm = prm;
 
-            if (prd && (prd > NTC_PERIOD_C1 || prd < NTC_PERIOD_B3))
-            {
-                NTC_printcell
-                (
-                    &context,
-                    "note pitch outside the allowed range.\n", prd
-                );
-                prdcompat = 0;
-            }
+            pattern_context.display.pat = pat;
+            pattern_context.display.row = row;
+            pattern_context.display.chn = chn;
+            pattern_context.display.fname = file->name;
+            pattern_context.display.stream = stdout;
 
-            if (cmd > 0x4 && cmd < 0xA)
-            {
-                NTC_printcell
-                (
-                    &context,
-                    "invalid command %01X.\n", (unsigned int)cmd
-                );
-            }
-            else if (cmd == 0xD && prm)
-            {
-                NTC_printcell
-                (
-                    &context,
-                    "pattern break (D) with nonzero parameter.\n"
-                );
-            }
-            else if (cmd == 0xE && (prm & 0xF0))
-            {
-                NTC_printcell
-                (
-                    &context,
-                    "extended command (E) with nonzero subcommand.\n"
-                );
-            }
-            else if (cmd == 0xF && prm >= 0x20)
-            {
-                NTC_printcell
-                (
-                    &context,
-                    "CIA tempo command (F with parameter larger than $1F).\n"
-                );
-            }
-            else continue;
-
-            cmdcompat = 0;
+            prdcompat = NTC_checkprd(&pattern_context);
+            cmdcompat = NTC_checkcmd(&pattern_context);
         }
     }
 

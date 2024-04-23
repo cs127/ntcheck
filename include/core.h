@@ -47,6 +47,15 @@ typedef struct NTC_Display
 }
 NTC_Display;
 
+typedef struct NTC_Pattern
+{
+    unsigned short int prd;
+    unsigned char cmd;
+    unsigned char prm;
+    NTC_Display display;
+}
+NTC_Pattern;
+
 void NTC_vprint(FILE* stream, const char* fname, const char* fmt, va_list ap);
 
 void NTC_print(FILE* stream, const char* fname, const char* fmt, ...);
