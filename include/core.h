@@ -37,17 +37,21 @@ typedef struct NTC_File
 }
 NTC_File;
 
+typedef struct NTC_Display
+{
+    FILE* stream;
+    const char* fname;
+    size_t pat;
+    size_t row;
+    size_t chn;
+}
+NTC_Display;
 
 void NTC_vprint(FILE* stream, const char* fname, const char* fmt, va_list ap);
 
 void NTC_print(FILE* stream, const char* fname, const char* fmt, ...);
 
-void NTC_printcell
-(
-    FILE* stream, const char* fname,
-    size_t pat, size_t row, size_t chn,
-    const char* fmt, ...
-);
+void NTC_printcell(NTC_Display* context,const char* fmt, ...);
 
 
 int NTC_checkmagic(NTC_File* file);

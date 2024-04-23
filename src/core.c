@@ -31,20 +31,20 @@ void NTC_print(FILE* stream, const char* fname, const char* fmt, ...)
     va_end(ap);
 }
 
-void NTC_printcell
-(
-    FILE* stream, const char* fname,
-    size_t pat, size_t row, size_t chn,
-    const char* fmt, ...
-)
+void NTC_printcell(NTC_Display* context, const char* fmt, ...)
 {
+    FILE* stream = context->stream;
+    const char* fname = context->fname;
+    unsigned int pat = context->pat;
+    unsigned int row = context->row;
+    unsigned int chn = context->chn;
     va_list ap;
 
     NTC_print
     (
         stream, fname,
         "(PAT %03u ROW %02u CHN %01u) ",
-        (unsigned int)pat, (unsigned int)row, (unsigned int)(chn + 1)
+        pat, row, (chn + 1)
     );
 
     va_start(ap, fmt);
@@ -194,6 +194,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
     unsigned char prm;
     int prdcompat = 1;
     int cmdcompat = 1;
+    NTC_Display context;
 
     fseek(file->stream, NTC_PATTERNS_PTR + pat * NTC_PATSIZE, SEEK_SET);
 
@@ -213,11 +214,17 @@ int NTC_procpat(NTC_File* file, size_t pat)
             fread(&prm, 1, 1, file->stream);
             cmd &= 0x0F;
 
+            context.pat = pat;
+            context.row = row;
+            context.chn = chn;
+            context.fname = file->name;
+            context.stream = stdout;
+
             if (prd && (prd > NTC_PERIOD_C1 || prd < NTC_PERIOD_B3))
             {
                 NTC_printcell
                 (
-                    stdout, file->name, pat, row, chn,
+                    &context,
                     "note pitch outside the allowed range.\n", prd
                 );
                 prdcompat = 0;
@@ -227,7 +234,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, file->name, pat, row, chn,
+                    &context,
                     "invalid command %01X.\n", (unsigned int)cmd
                 );
             }
@@ -235,7 +242,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, file->name, pat, row, chn,
+                    &context,
                     "pattern break (D) with nonzero parameter.\n"
                 );
             }
@@ -243,7 +250,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, file->name, pat, row, chn,
+                    &context,
                     "extended command (E) with nonzero subcommand.\n"
                 );
             }
@@ -251,7 +258,7 @@ int NTC_procpat(NTC_File* file, size_t pat)
             {
                 NTC_printcell
                 (
-                    stdout, file->name, pat, row, chn,
+                    &context,
                     "CIA tempo command (F with parameter larger than $1F).\n"
                 );
             }
